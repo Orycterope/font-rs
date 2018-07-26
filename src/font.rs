@@ -778,7 +778,7 @@ impl<'a> Font<'a> {
                 })
             }
             _ => {
-                panic!("glyph {} error", glyph_id);
+				// not rendering
                 None
             }
         }
