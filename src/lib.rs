@@ -14,6 +14,13 @@
 
 //! A very high performance font renderer.
 
+#![no_std]
+#![feature(alloc)]
+#[macro_use]
+extern crate alloc;
+extern crate hashmap_core;
+extern crate math;
+
 #[macro_use]
 pub mod macros;
 pub mod accumulate;

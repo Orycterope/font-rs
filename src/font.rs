@@ -14,10 +14,12 @@
 
 //! A simple renderer for TrueType fonts
 
-use std::collections::HashMap;
-use std::fmt;
-use std::fmt::{Debug, Display, Formatter};
-use std::result::Result;
+use hashmap_core::HashMap;
+use core::fmt;
+use core::fmt::{Debug, Display, Formatter};
+use core::result::Result;
+use alloc::{Vec, String};
+use math::{floor::floorf, ceil::ceilf};
 
 use geom::{affine_pt, Affine, Point};
 use raster::Raster;
@@ -704,10 +706,10 @@ impl<'a> Font<'a> {
     ) -> (Metrics, Affine) {
         let ppem = self.head.units_per_em();
         let scale = (size as f32) / (ppem as f32);
-        let l = (xmin as f32 * scale).floor() as i32;
-        let t = (ymax as f32 * -scale).floor() as i32;
-        let r = (xmax as f32 * scale).ceil() as i32;
-        let b = (ymin as f32 * -scale).ceil() as i32;
+        let l = floorf(xmin as f32 * scale) as i32;
+        let t = floorf(ymax as f32 * -scale) as i32;
+        let r = ceilf(xmax as f32 * scale) as i32;
+        let b = ceilf(ymin as f32 * -scale) as i32;
         let metrics = Metrics {
             l: l,
             t: t,
@@ -739,7 +741,7 @@ impl<'a> Font<'a> {
                 }
             }
             _ => {
-                println!("unhandled glyph case");
+                panic!("unhandled glyph case");
             }
         }
     }
@@ -776,7 +778,7 @@ impl<'a> Font<'a> {
                 })
             }
             _ => {
-                println!("glyph {} error", glyph_id);
+                panic!("glyph {} error", glyph_id);
                 None
             }
         }

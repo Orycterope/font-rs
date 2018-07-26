@@ -14,7 +14,7 @@
 
 //! Geometry primitive data structures and manipulations
 
-use std::fmt::{Debug, Formatter, Result};
+use core::fmt::{Debug, Formatter, Result};
 
 #[derive(Copy, Clone)]
 pub struct Point {

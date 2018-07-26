@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use alloc::Vec;
+use math::abs::fabsf;
+
 #[cfg(feature = "sse")]
 #[link(name = "accumulate")]
 extern "C" {
@@ -43,7 +46,7 @@ pub fn accumulate(src: &[f32]) -> Vec<u8> {
         .map(|c| {
             // This would translate really well to SIMD
             acc += c;
-            let y = acc.abs();
+            let y = fabsf(acc);
             let y = if y < 1.0 { y } else { 1.0 };
             (255.0 * y) as u8
         })
