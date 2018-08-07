@@ -672,6 +672,26 @@ impl<'a> CompoundGlyph<'a> {
     }
 }
 
+struct Hhea<'a>(&'a [u8]);
+
+impl<'a> Hhea<'a> {
+    fn get_ascent(&self) -> i16 {
+        get_i16(self.0, 4).unwrap()
+    }
+
+    fn get_descent(&self) -> i16 {
+        get_i16(self.0, 6).unwrap()
+    }
+
+    fn get_line_gap(&self) -> i16 {
+        get_i16(self.0, 8).unwrap()
+    }
+
+    fn get_advance_width_max(&self) -> u16 {
+        get_u16(self.0, 10).unwrap()
+    }
+}
+
 pub struct Font<'a> {
     _version: u32,
     _tables: HashMap<Tag, &'a [u8]>,
@@ -679,6 +699,7 @@ pub struct Font<'a> {
     maxp: Maxp<'a>,
     cmap: Option<Cmap<'a>>,
     loca: Option<Loca<'a>>,
+    hhea: Option<Hhea<'a>>,
     glyf: Option<&'a [u8]>,
     encoding_index: Option<u16>,
 }
@@ -828,6 +849,22 @@ impl<'a> Font<'a> {
             None => None,
         }
     }
+
+    pub fn max_descent(&self, font_size: u32) -> Option<i32> {
+        self.hhea.as_ref().map(|hhea| hhea.get_descent() as i32 * font_size as i32 / self.head.units_per_em() as i32)
+    }
+
+    pub fn max_ascent(&self, font_size: u32) -> Option<i32> {
+        self.hhea.as_ref().map(|hhea| hhea.get_ascent() as i32 * font_size as i32 / self.head.units_per_em() as i32)
+    }
+
+    pub fn line_gap(&self, font_size: u32) -> Option<i32> {
+        self.hhea.as_ref().map(|hhea| hhea.get_line_gap() as i32 * font_size as i32 / self.head.units_per_em() as i32)
+    }
+
+    pub fn max_advance_width(&self, font_size: u32) -> Option<u32> {
+        self.hhea.as_ref().map(|hhea| hhea.get_advance_width_max() as u32 * font_size as u32 / self.head.units_per_em() as u32)
+    }
 }
 
 #[derive(Debug)]
@@ -970,6 +1007,7 @@ pub fn parse(data: &[u8]) -> Result<Font, FontError> {
     let loca = tables.get(&Tag::from_str("loca")).map(|&data| Loca(data));
     let glyf = tables.get(&Tag::from_str("glyf")).map(|&data| data);
     let cmap = tables.get(&Tag::from_str("cmap")).map(|&data| Cmap(data));
+    let hhea = tables.get(&Tag::from_str("hhea")).map(|&data| Hhea(data));
     let encoding_index = cmap.as_ref().and_then(|cmap| cmap.find_format_4_encoding());
     let f = Font {
         _version: version,
@@ -977,6 +1015,7 @@ pub fn parse(data: &[u8]) -> Result<Font, FontError> {
         head: head,
         maxp: maxp,
         loca: loca,
+        hhea: hhea,
         cmap: cmap,
         glyf: glyf,
         encoding_index: encoding_index,
