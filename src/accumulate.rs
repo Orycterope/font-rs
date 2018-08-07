@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use alloc::Vec;
+use alloc::prelude::*;
 use math::abs::fabsf;
 
 #[cfg(feature = "sse")]

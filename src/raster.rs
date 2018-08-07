@@ -15,7 +15,7 @@
 //! An antialiased rasterizer for quadratic Beziers
 
 use core::cmp::min;
-use alloc::Vec;
+use alloc::prelude::*;
 
 use accumulate::accumulate;
 use geom::Point;

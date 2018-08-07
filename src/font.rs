@@ -18,7 +18,7 @@ use hashmap_core::HashMap;
 use core::fmt;
 use core::fmt::{Debug, Display, Formatter};
 use core::result::Result;
-use alloc::{Vec, String};
+use alloc::prelude::*;
 use math::{floor::floorf, ceil::ceilf};
 
 use geom::{affine_pt, Affine, Point};

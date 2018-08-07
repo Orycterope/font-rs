@@ -9,7 +9,7 @@ repository = "https://github.com/google/font-rs"
 build = "build.rs"
 
 [dependencies]
-hashmap_core = "<=0.1.8"
+hashmap_core = "0.1.9"
 math = { git = "https://github.com/roblabla/math.rs.git" }
 
 [features]
