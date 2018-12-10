@@ -848,18 +848,22 @@ impl<'a> Font<'a> {
         }
     }
 
+    /// Gets the max descent of the font from the `hhea` table.
     pub fn max_descent(&self, font_size: u32) -> Option<i32> {
         self.hhea.as_ref().map(|hhea| hhea.get_descent() as i32 * font_size as i32 / self.head.units_per_em() as i32)
     }
 
+    /// Gets the max ascent of the font from the `hhea` table.
     pub fn max_ascent(&self, font_size: u32) -> Option<i32> {
         self.hhea.as_ref().map(|hhea| hhea.get_ascent() as i32 * font_size as i32 / self.head.units_per_em() as i32)
     }
 
+    /// Gets the line gap of the font from the `hhea` table.
     pub fn line_gap(&self, font_size: u32) -> Option<i32> {
         self.hhea.as_ref().map(|hhea| hhea.get_line_gap() as i32 * font_size as i32 / self.head.units_per_em() as i32)
     }
 
+    /// Gets the max advance width of the font from the `hhea` table.
     pub fn max_advance_width(&self, font_size: u32) -> Option<u32> {
         self.hhea.as_ref().map(|hhea| hhea.get_advance_width_max() as u32 * font_size as u32 / self.head.units_per_em() as u32)
     }
