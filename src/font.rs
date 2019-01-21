@@ -14,7 +14,7 @@
 
 //! A simple renderer for TrueType fonts
 
-use hashmap_core::HashMap;
+use hashbrown::HashMap;
 use core::fmt;
 use core::fmt::{Debug, Display, Formatter};
 use core::result::Result;

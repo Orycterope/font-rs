@@ -18,7 +18,7 @@
 #![feature(alloc)]
 #[macro_use]
 extern crate alloc;
-extern crate hashmap_core;
+extern crate hashbrown;
 extern crate math;
 
 #[macro_use]
