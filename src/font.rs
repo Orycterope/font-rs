@@ -18,7 +18,8 @@ use hashbrown::HashMap;
 use core::fmt;
 use core::fmt::{Debug, Display, Formatter};
 use core::result::Result;
-use alloc::prelude::*;
+use alloc::string::String;
+use alloc::vec::Vec;
 use math::{floor::floorf, ceil::ceilf};
 
 use geom::{affine_pt, Affine, Point};

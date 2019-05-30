@@ -15,7 +15,6 @@
 //! A very high performance font renderer.
 
 #![no_std]
-#![feature(alloc)]
 #[macro_use]
 extern crate alloc;
 extern crate hashbrown;
