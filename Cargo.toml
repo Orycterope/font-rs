@@ -10,13 +10,21 @@ build = "build.rs"
 
 [dependencies]
 math = { git = "https://github.com/roblabla/math.rs.git" }
+# When built as part of libstd
+core = { version = "1.0.0", optional = true, package = "rustc-std-workspace-core" }
+compiler_builtins = { version = "0.1.2", optional = true }
+alloc = { version = "1.0.0", optional = true, package = "rustc-std-workspace-alloc" }
 
 [dependencies.hashbrown]
-features = ["nightly"]
-version = "0.1.8"
+version = "0.4.0"
+
 
 [features]
+default = []
 sse = []
+rustc-internal-api = []
+rustc-dep-of-std = ["core", "compiler_builtins", "alloc", "rustc-internal-api", "hashbrown/rustc-dep-of-std"]
+raw = []
 
 [target.'cfg(target_feature = "sse")'.build-dependencies]
 gcc = "0.3"
