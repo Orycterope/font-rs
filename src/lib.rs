@@ -15,6 +15,9 @@
 //! A very high performance font renderer.
 
 #[macro_use]
+extern crate log;
+
+#[macro_use]
 pub mod macros;
 pub mod accumulate;
 pub mod font;

@@ -551,7 +551,7 @@ impl<'a> Iterator for GlyphPoints<'a> {
                 self.flag_repeats_remaining -= 1;
             }
             let flag = self.last_flag;
-            //println!("flag={:02x}, flags_ix={}, x_ix={}, ({}) y_ix={} ({})",
+            //debug!("flag={:02x}, flags_ix={}, x_ix={}, ({}) y_ix={} ({})",
             // flag, self.flags_ix, self.x_ix, self.data.get(self.x_ix), self.y_ix,
             // self.data.get(self.y_ix));
             match flag & 0x12 {
@@ -778,15 +778,15 @@ impl<'a> Font<'a> {
             Glyph::Simple(ref s) => {
                 let mut p = s.points();
                 for n in s.contour_sizes() {
-                    //println!("n = {}", n);
+                    //debug!("n = {}", n);
                     //let v = path_from_pts(p.by_ref().take(n)).collect::<Vec<_>>();
-                    //println!("size = {}", v.len());
+                    //debug!("size = {}", v.len());
                     draw_path(raster, z, &mut path_from_pts(p.by_ref().take(n)));
                 }
             }
             Glyph::Compound(ref c) => {
                 for (glyph_index, affine) in c.components() {
-                    //println!("component {} {:?}", glyph_index, affine);
+                    //debug!("component {} {:?}", glyph_index, affine);
                     let concat = Affine::concat(z, &affine);
                     if let Some(component_glyph) = self.get_glyph(glyph_index) {
                         self.render_glyph_inner(raster, &concat, &component_glyph);
@@ -794,7 +794,7 @@ impl<'a> Font<'a> {
                 }
             }
             _ => {
-                println!("unhandled glyph case");
+                error!("unhandled glyph case");
             }
         }
     }
@@ -831,7 +831,7 @@ impl<'a> Font<'a> {
                 })
             }
             _ => {
-                println!("glyph {} error", glyph_id);
+                error!("glyph {} error", glyph_id);
                 None
             }
         }
@@ -1057,7 +1057,7 @@ pub fn parse(data: &[u8]) -> Result<Font, FontError> {
         let offset = get_u32(header, 8).unwrap();
         let length = get_u32(header, 12).unwrap();
         let table_data = &data[offset as usize..(offset + length) as usize];
-        //println!("{}: {}", Tag(tag), table_data.len());
+        //debug!("{}: {}", Tag(tag), table_data.len());
         tables.insert(Tag(tag), table_data);
     }
     let head = Head(*tables.get(&Tag::from_str("head")).unwrap()); // todo: don't fail
@@ -1082,46 +1082,46 @@ pub fn parse(data: &[u8]) -> Result<Font, FontError> {
         hhea: hhea,
         hmtx: hmtx,
     };
-    //println!("version = {:x}", version);
+    //debug!("version = {:x}", version);
     Ok(f)
 }
 
 /*
 fn dump_glyph(g: Glyph) {
     match g {
-        Glyph::Empty => println!("empty"),
+        Glyph::Empty => info!("empty"),
         Glyph::Simple(s) => {
-            //println!("{} contours", s.number_of_contours())
+            //info!("{} contours", s.number_of_contours())
             let mut p = s.points();
             for n in s.contour_sizes() {
                 for _ in 0..n {
-                    println!("{:?}", p.next().unwrap());
+                    info!("{:?}", p.next().unwrap());
                 }
-                println!("z");
+                info!("z");
             }
             let mut p = s.points();
             for n in s.contour_sizes() {
                 for pathop in path_from_pts(p.by_ref().take(n)) {
-                    println!("{:?}", pathop);
+                    info!("{:?}", pathop);
                 }
             }
         },
-        _ => println!("other")
+        _ => info!("other")
     }
 }
 */
 
 /*
 fn dump(data: Vec<u8>) {
-    println!("length is {}", data.len());
+    info!("length is {}", data.len());
     match parse(&data) {
         Ok(font) => {
-            println!("numGlyphs = {}", font.maxp.num_glyphs());
+            info!("numGlyphs = {}", font.maxp.num_glyphs());
             for i in 0.. font.maxp.num_glyphs() {
-                println!("glyph {}", i);
+                info!("glyph {}", i);
                 match font.get_glyph(i) {
                     Some(g) => dump_glyph(g),
-                    None => println!("glyph {} error", i)
+                    None => error!("glyph {} error", i)
                 }
             }
         },

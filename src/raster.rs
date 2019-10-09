@@ -44,7 +44,7 @@ impl Raster {
     }
 
     pub fn draw_line(&mut self, p0: &Point, p1: &Point) {
-        //println!("draw_line {} {}", p0, p1);
+        //debug!("draw_line {} {}", p0, p1);
         if p0.y == p1.y {
             return;
         }
@@ -98,7 +98,7 @@ impl Raster {
     }
 
     pub fn draw_quad(&mut self, p0: &Point, p1: &Point, p2: &Point) {
-        //println!("draw_quad {} {} {}", p0, p1, p2);
+        //debug!("draw_quad {} {} {}", p0, p1, p2);
         let devx = p0.x - 2.0 * p1.x + p2.x;
         let devy = p0.y - 2.0 * p1.y + p2.y;
         let devsq = devx * devx + devy * devy;
@@ -108,7 +108,7 @@ impl Raster {
         }
         let tol = 3.0;
         let n = 1 + (tol * (devx * devx + devy * devy)).sqrt().sqrt().floor() as usize;
-        //println!("n = {}", n);
+        //debug!("n = {}", n);
         let mut p = *p0;
         let nrecip = recip(n as f32);
         let mut t = 0.0;
