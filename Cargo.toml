@@ -9,6 +9,9 @@ repository = "https://github.com/google/font-rs"
 
 [dependencies]
 log = "0.4.8"
+hashbrown = { version = "0.5.0", default-features = false }
 
 [features]
+default = ["std"]
+std = []
 sse = []

@@ -14,13 +14,17 @@
 
 //! A simple renderer for TrueType fonts
 
-use std::collections::HashMap;
-use std::fmt;
-use std::fmt::{Debug, Display, Formatter};
-use std::result::Result;
+use hashbrown::HashMap;
+use core::fmt;
+use core::fmt::{Debug, Display, Formatter};
+use core::result::Result;
+use alloc::vec::Vec;
+use alloc::string::String;
 
 use geom::{affine_pt, Affine, Point};
 use raster::Raster;
+use utils::{floor, ceil};
+
 
 #[derive(PartialEq, Eq, Hash)]
 struct Tag(u32);
@@ -234,7 +238,7 @@ impl<'a> EncodingFormat4<'a> {
     }
 
     fn get_u16_vec(&self, start_position: u16, count: u16) -> Vec<u16> {
-        let mut result = vec![];
+        let mut result = Vec::new();
         let mut vec_position = start_position;
         let limit = vec_position + 2 * count;
         while vec_position < limit {
@@ -245,7 +249,7 @@ impl<'a> EncodingFormat4<'a> {
     }
 
     fn get_i16_vec(&self, start_position: u16, count: u16) -> Vec<i16> {
-        let mut result = vec![];
+        let mut result = Vec::new();
         let mut vec_position = start_position;
         let limit = vec_position + 2 * count;
         while vec_position < limit {
@@ -379,7 +383,7 @@ impl<'a> Cmap<'a> {
     }
 
     fn get_encoding_records(&self) -> Vec<EncodingRecord> {
-        let mut encodings = vec![];
+        let mut encodings = Vec::new();
         for i in 0..self.get_num_tables() {
             encodings.push(self.get_encoding_record(i).unwrap());
         }
@@ -410,7 +414,7 @@ impl<'a> Cmap<'a> {
     }
 
     fn get_encodings(&self) -> Vec<Encoding> {
-        let mut encodings = vec![];
+        let mut encodings = Vec::new();
         for i in 0..self.get_num_tables() {
             encodings.push(self.get_encoding(i).unwrap());
         }
@@ -759,10 +763,10 @@ impl<'a> Font<'a> {
         &self, xmin: i16, ymin: i16, xmax: i16, ymax: i16, size: u32,
     ) -> (Metrics, Affine) {
         let scale = self.scale(size);
-        let l = (xmin as f32 * scale).floor() as i32;
-        let t = (ymax as f32 * -scale).floor() as i32;
-        let r = (xmax as f32 * scale).ceil() as i32;
-        let b = (ymin as f32 * -scale).ceil() as i32;
+        let l = floor(xmin as f32 * scale) as i32;
+        let t = floor(ymax as f32 * -scale) as i32;
+        let r = ceil(xmax as f32 * scale) as i32;
+        let b = ceil(ymin as f32 * -scale) as i32;
         let metrics = Metrics {
             l: l,
             t: t,

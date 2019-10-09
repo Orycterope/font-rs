@@ -12,14 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::mem;
+use alloc::vec::Vec;
 
-#[cfg(target_arch = "x86_64")]
-use std::arch::x86_64::*;
+#[cfg(all(feature = "sse", target_arch = "x86_64"))]
+use core::arch::x86_64::*;
 
-#[cfg(target_arch = "x86")]
-use std::arch::x86::*;
+#[cfg(all(feature = "sse", target_arch = "x86"))]
+use core::arch::x86::*;
 
+use utils::abs;
+
+#[cfg(feature = "sse")]
 macro_rules! _mm_shuffle {
     ($z:expr, $y:expr, $x:expr, $w:expr) => {
         ($z << 6) | ($y << 4) | ($x << 2) | $w
@@ -56,7 +59,7 @@ pub fn accumulate(src: &[f32]) -> Vec<u8> {
             let mut z = _mm_cvttps_epi32(y);
             z = _mm_shuffle_epi8(z, mask);
 
-            _mm_store_ss(mem::transmute(&dst[i]), _mm_castsi128_ps(z));
+            _mm_store_ss(core::mem::transmute(&dst[i]), _mm_castsi128_ps(z));
             offset = _mm_shuffle_ps(x, x, _mm_shuffle!(3, 3, 3, 3));
         }
 
@@ -73,7 +76,7 @@ pub fn accumulate(src: &[f32]) -> Vec<u8> {
         .map(|c| {
             // This would translate really well to SIMD
             acc += c;
-            let y = acc.abs();
+            let y = abs(acc);
             let y = if y < 1.0 { y } else { 1.0 };
             (255.0 * y) as u8
         })
@@ -91,7 +94,7 @@ mod tests {
         src.iter()
             .map(|c| {
                 acc += c;
-                let y = acc.abs();
+                let y = abs(acc);
                 let y = if y < 1.0 { y } else { 1.0 };
                 (255.0 * y) as u8
             })

@@ -14,6 +14,14 @@
 
 //! A very high performance font renderer.
 
+#![no_std]
+#![cfg_attr(not(feature = "std"), feature(core_intrinsics))]
+
+#[macro_use]
+extern crate alloc;
+
+extern crate hashbrown;
+
 #[macro_use]
 extern crate log;
 
@@ -23,3 +31,4 @@ pub mod accumulate;
 pub mod font;
 pub mod geom;
 pub mod raster;
+pub mod utils;

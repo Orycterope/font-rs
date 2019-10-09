@@ -14,10 +14,12 @@
 
 //! An antialiased rasterizer for quadratic Beziers
 
-use std::cmp::min;
+use core::cmp::min;
+use alloc::vec::Vec;
 
 use accumulate::accumulate;
 use geom::Point;
+use utils::{floor, ceil, sqrt};
 
 // TODO: sort out crate structure. Right now we want this when compiling raster as a binary,
 // but need it commented out when compiling showttf
@@ -59,15 +61,15 @@ impl Raster {
         if p0.y < 0.0 {
             x -= p0.y * dxdy;
         }
-        for y in y0..min(self.h, p1.y.ceil() as usize) {
+        for y in y0..min(self.h, ceil(p1.y) as usize) {
             let linestart = y * self.w;
             let dy = ((y + 1) as f32).min(p1.y) - (y as f32).max(p0.y);
             let xnext = x + dxdy * dy;
             let d = dy * dir;
             let (x0, x1) = if x < xnext { (x, xnext) } else { (xnext, x) };
-            let x0floor = x0.floor();
+            let x0floor = floor(x0);
             let x0i = x0floor as i32;
-            let x1ceil = x1.ceil();
+            let x1ceil = ceil(x1);
             let x1i = x1ceil as i32;
             if x1i <= x0i + 1 {
                 let xmf = 0.5 * (x + xnext) - x0floor;
@@ -107,7 +109,7 @@ impl Raster {
             return;
         }
         let tol = 3.0;
-        let n = 1 + (tol * (devx * devx + devy * devy)).sqrt().sqrt().floor() as usize;
+        let n = 1 + floor(sqrt(sqrt(tol * (devx * devx + devy * devy)))) as usize;
         //debug!("n = {}", n);
         let mut p = *p0;
         let nrecip = recip(n as f32);
@@ -127,7 +129,7 @@ impl Raster {
         // This would translate really well to SIMD
         self.a[0..self.w * self.h].iter().map(|&a| {
             acc += a;
-            (255.0 * acc.abs().min(1.0)) as u8
+            (255.0 * abs(acc).min(1.0)) as u8
             //(255.5 * (0.5 + 0.4 * acc)) as u8
         }).collect()
     }
